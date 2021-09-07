@@ -27,6 +27,7 @@ As tabelas criadas devem ser normalizadas e armazenadas no PostgreSQL. Além dis
 Usando o banco de dados, criei um esquema em estrela desnormalizado otimizado para agregações rápidas e consultas simplificadas na análise de reprodução de músicas. Isso inclui uma tabela de fatos de ** songplays ** e quatro tabelas de dimensão para ** usuários, músicas, artistas e tempo **:
 
 ![](assets/sparkifybdcap.png)
+
 ## Data
 
 ### Songs metadata
