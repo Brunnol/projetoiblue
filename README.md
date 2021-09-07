@@ -8,32 +8,32 @@
 
 ## Motivation
 
-I learn Data Modeling with RDM by using JSON metadata that represents the songs and JSON files that represents user activity.
+desenvolvimento de projeto para Etapa de Seleção
 
 ## Project
 
-Created tables must be normalized and stored into PostgreSQL. In addtition for analyzing user activity, Fact and Dimension tables must be created from songs metadata and user activity logs.
+As tabelas criadas devem ser normalizadas e armazenadas no PostgreSQL. Além disso, para analisar a atividade do usuário, as tabelas de Fato e Dimensão devem ser criadas a partir de metadados de músicas e logs de atividades do usuário.
 
 ## Files
 
-- etl.ipynb: this notebook to develop the ETL process for each tables
-- test.ipynb: this notebook to test sql_queries.py and elt.ipynb (etl.py) 
-- create_tables.py: create database and tables
-- elt.py: define the ETL process
-- sql_queries.py: define the SQL queries
+- etl.ipynb: este caderno para desenvolver o processo ETL para cada tabela
+- test.ipynb: este notebook para testar sql_queries.py e elt.ipynb (etl.py) 
+- create_tables.py: criar banco de dados e tabelas
+- elt.py: definir o processo ETL
+- sql_queries.py: definir as consultas SQL
 
 ## Data
 
 ### Songs metadata
 
-The files are partitioned by the first three letters of each song's track ID. For example, here are filepaths to two files in this dataset.
+Os arquivos são particionados pelas três primeiras letras do ID da faixa de cada música. Por exemplo, aqui estão os caminhos de arquivo para dois arquivos neste conjunto de dados.
 
 ```
 song_data/A/B/C/TRABCEI128F424C983.json
 song_data/A/A/B/TRAABJL12903CDCF1A.json
 ```
 
-And below is an example of what a single song file, TRAABJL12903CDCF1A.json, looks like.
+E abaixo está um exemplo da aparência de um único arquivo de música, TRAABJL12903CDCF1A.json.
 
 ```
 {"num_songs": 1, "artist_id": "ARJIE2Y1187B994AB7", "artist_latitude": null, "artist_longitude": null, "artist_location": "", "artist_name": "Line Renaud", "song_id": "SOUPIRU12A6D4FA1E1", "title": "Der Kleine Dompfaff", "duration": 152.92036, "year": 0}
@@ -41,14 +41,15 @@ And below is an example of what a single song file, TRAABJL12903CDCF1A.json, loo
 
 ### User activity logs
 
-The log files in the dataset you'll be working with are partitioned by year and month. For example, here are filepaths to two files in this dataset.
+
+Os arquivos de log no conjunto de dados com o qual você trabalhará são particionados por ano e mês. Por exemplo, aqui estão os caminhos de arquivo para dois arquivos neste conjunto de dados.
 
 ```
 log_data/2018/11/2018-11-12-events.json
 log_data/2018/11/2018-11-13-events.json
 ```
 
-And below is an example of what a single activity log in 2018-11-13-events.json, looks like.
+E abaixo está um exemplo de como é um único registro de atividades em 2018-11-13-events.json.
 
 ```
 {"artist":null,"auth":"Logged In","firstName":"Kevin","gender":"M","itemInSession":0,"lastName":"Arellano","length":null,"level":"free","location":"Harrisburg-Carlisle, PA","method":"GET","page":"Home","registration":1540006905796.0,"sessionId":514,"song":null,"status":200,"ts":1542069417796,"userAgent":"\"Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_9_4) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/36.0.1985.125 Safari\/537.36\"","userId":"66"}
@@ -56,59 +57,58 @@ And below is an example of what a single activity log in 2018-11-13-events.json,
 
 ## ETL Processes
 
-The summary of ETL processes is below.
-For more details, see etl.ipynb, etl.py and sql_queries.py.
+O resumo dos processos ETL está abaixo.
+Para obter mais detalhes, consulte etl.ipynb, etl.py e sql_queries.py.
 
 ### Songs metadata
 
 #### #1: songs table
 
-- Parse and read a song JSON file by using pandas.read_json function.
-- Select columns for song ID, title, artist ID, year, and duration from dataframe.
-- Execute an insert query to songs table in PostgreSQL.
-  - If the song ID confliction is occured, do nothing.
-- Repeat the process iterably for all songs data.
+- Analise e leia um arquivo JSON de música usando a função pandas.read_json.
+- Selecione as colunas de ID da música, título, ID do artista, ano e duração do dataframe.
+- Execute uma consulta de inserção na tabela de músicas no PostgreSQL.
+  - Se ocorrer um conflito de ID de música, não faça nada.
+- Repita o processo iteravelmente para todos os dados de músicas.
 
 #### #2: artists table
 
-- Parse and read a song JSON file by using pandas.read_json function.
-- Select columns for artist ID, name, location, latitude, and longitude from dataframe.
-- Execute an insert query to artists table in PostgreSQL.
-  - If the artist ID confliction is occured, do nothing.
-- Repeat the process iterably for all songs data.
+- Analise e leia um arquivo JSON de música usando a função pandas.read_json.
+- Selecione colunas para a ID do artista, nome, localização, latitude e longitude do dataframe.
+- Execute uma consulta de inserção na tabela de artistas no PostgreSQL.
+  - Se ocorrer um conflito de ID de artista, não faça nada.
+- Repita o processo iteravelmente para todos os dados de músicas.
 
 ### User activity logs
 
 #### #3: time table
 
-- Parse and read a JSON file of user activity log by using pandas.read_json function.
-- Filter records by NextSong action.
-- Convert the ts timestamp column to datetime.
-- Extract the timestamp, hour, day, week of year, month, year, and weekday from dataframe.
-- Execute an insert query to time table in PostgreSQL.
-- Repeat the process iterably for all log files.
+- Analise e leia um arquivo JSON do log de atividades do usuário usando a função pandas.read_json.
+- Filtre os registros por ação NextSong.
+- Converta a coluna de carimbo de data / hora ts em data e hora.
+- Extraia o carimbo de data / hora, hora, dia, semana do ano, mês, ano e dia da semana do dataframe.
+- Execute uma consulta de inserção à tabela de tempo no PostgreSQL.
+- Repita o processo iteravelmente para todos os arquivos de log.
 
 #### #4: users table
 
-- Parse and read a JSON file of user activity log by using pandas.read_json function.
-- Filter records by NextSong action.
-- Select columns for user ID, first name, last name, gender and level from dataframe.
-- Execute an insert query to songs table in PostgreSQL.
-  - If the user ID confliction is occured, Update value of level on the recored.
-- Repeat the process iterably for all log files.
-
+- Analise e leia um arquivo JSON do log de atividades do usuário usando a função pandas.read_json.
+- Filtre os registros por ação NextSong.
+- Selecione colunas para ID de usuário, nome, sobrenome, gênero e nível do dataframe.
+- Execute uma consulta de inserção na tabela de músicas no PostgreSQL.
+  - Se houver conflito de ID do usuário, atualiza o valor do nível no registro.
+- Repita o processo iteravelmente para todos os arquivos de log.
+- 
 #### #4: songsplays table
 
-- Parse and read a JSON file of user activity log by using pandas.read_json function.
-- Filter records by NextSong action.
-- Select the timestamp, user ID, level, song ID, artist ID, session ID, location, and user agent from dataframe.
-  - Log files don't include song ID and artist ID, so get these ID by executing select query to songs and artists tables.
-- Execute an insert query to songs table in PostgreSQL.
-- Repeat the process iterably for all log files.
-
+- Analise e leia um arquivo JSON do log de atividades do usuário usando a função pandas.read_json.
+- Filtre os registros por ação NextSong.
+- Selecione o carimbo de data / hora, ID do usuário, nível, ID da música, ID do artista, ID da sessão, local e agente do usuário do dataframe.
+  - Os arquivos de registro não incluem o ID da música e o ID do artista, portanto, obtenha esses ID executando a consulta de seleção nas tabelas de músicas e artistas.
+- Execute uma consulta de inserção na tabela de músicas no PostgreSQL.
+- Repita o processo iteravelmente para todos os arquivos de log.
 ## Usage
 
-Create tables and execute ETL.
+Crie tabelas e execute ETL.
 
 ```
 $ python create_tables.py
