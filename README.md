@@ -22,6 +22,11 @@ As tabelas criadas devem ser normalizadas e armazenadas no PostgreSQL. Além dis
 - elt.py: definir o processo ETL
 - sql_queries.py: definir as consultas SQL
 
+## Esquema de banco de dados para análise de reprodução de música
+
+Usando o banco de dados, criei um esquema em estrela desnormalizado otimizado para agregações rápidas e consultas simplificadas na análise de reprodução de músicas. Isso inclui uma tabela de fatos de ** songplays ** e quatro tabelas de dimensão para ** usuários, músicas, artistas e tempo **:
+
+![](assets/sparkifybdcap.jpg)
 ## Data
 
 ### Songs metadata
